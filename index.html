@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sandesh - Product designer building AI-native banking operations at Kotak. Designing workflows where intelligence is embedded from the ground up.">
+<meta name="keywords" content="AI product design, banking operations, agentic workflows, product designer, Mumbai">
+<meta name="author" content="Sandesh">
+<meta property="og:title" content="Sandesh — Designer × Builder × AI">
+<meta property="og:description" content="Building AI-native banking operations where humans and agents decide together">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sandesh — Designer × Builder × AI">
+<meta name="twitter:description" content="Building AI-native banking operations where humans and agents decide together">
+<title>Sandesh — Designer × Builder × AI</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-K4E7TR3BG8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-K4E7TR3BG8');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Petrona:ital,wght@0,200;0,400;1,200&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a08;
+  --fg: #e8e6e0;
+  --dim: #a0a098;
+  --accent: #ff6b35;
+  --line: #2a2a26;
+  --serif: 'Petrona', serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+html { 
+  scroll-behavior: smooth;
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1.7;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  animation: grain 8s steps(10) infinite;
+  z-index: 100;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 120px 40px 100px;
+  position: relative;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.container > * {
+  opacity: 0;
+  animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.container > *:nth-child(1) { animation-delay: 0.1s; }
+.container > *:nth-child(2) { animation-delay: 0.2s; }
+.container > *:nth-child(3) { animation-delay: 0.3s; }
+.container > *:nth-child(4) { animation-delay: 0.4s; }
+.container > *:nth-child(5) { animation-delay: 0.5s; }
+.container > *:nth-child(6) { animation-delay: 0.6s; }
+
+.accent-mark {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    var(--accent) 20%, 
+    var(--accent) 80%, 
+    transparent 100%);
+  opacity: 0.4;
+}
+
+.header {
+  margin-bottom: 100px;
+  position: relative;
+}
+
+.name {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  margin-bottom: 8px;
+}
+
+.tagline {
+  font-size: 13px;
+  color: var(--dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.hero { 
+  margin-bottom: 120px;
+  position: relative;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(36px, 7vw, 58px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 32px;
+  max-width: 600px;
+}
+
+.hero-title .accent-word {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.hero-title .subtitle {
+  display: block;
+  font-size: clamp(36px, 7vw, 58px);
+  font-weight: 400;
+  color: var(--fg);
+  opacity: 0.4;
+  margin-top: 8px;
+  letter-spacing: -0.03em;
+}
+
+section { 
+  margin-bottom: 100px;
+  position: relative;
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 32px;
+  display: block;
+}
+
+.about-content {
+  max-width: 760px;
+}
+
+.about-text {
+  font-size: 18px;
+  line-height: 2;
+  color: var(--dim);
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+}
+
+.about-text:last-child { margin-bottom: 0; }
+
+.about-text strong {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.about-text a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.about-text a:hover {
+  border-color: var(--accent);
+}
+
+.about-text s {
+  opacity: 0.5;
+}
+
+.exp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.exp-item {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+  transition: opacity 0.2s;
+}
+
+.exp-item:hover {
+  opacity: 0.8;
+}
+
+.exp-item.inactive {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.exp-name {
+  color: var(--fg);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.exp-arrow {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.exp-tag {
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.exp-desc {
+  font-size: 15px;
+  color: var(--dim);
+  line-height: 1.8;
+  margin: 0;
+}
+
+.footer {
+  margin-top: 140px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.footer-col h3 {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a {
+  font-size: 14px;
+  color: var(--dim);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.footer-links a:hover { 
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.footer-note {
+  font-size: 14px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+
+@media (hover: hover) {
+  a, .exp-item {
+    cursor: crosshair;
+  }
+}
+
+a:focus-visible, .exp-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 80px 24px 60px; }
+  .header { margin-bottom: 60px; }
+  .hero { margin-bottom: 80px; }
+  section { margin-bottom: 60px; }
+  .footer {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .accent-mark { display: none; }
+  .about-text { font-size: 17px; }
+  .exp-desc { font-size: 15px; }
+  .footer-links a { font-size: 14px; }
+  .footer-note { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="accent-mark"></div>
+
+<div class="container">
+
+  <header class="header">
+    <h1 class="name">Sandesh</h1>
+    <p class="tagline">Designer × Builder × AI</p>
+  </header>
+
+  <div class="hero">
+    <h2 class="hero-title">
+      Building <span class="accent-word">AI-native</span> banking operations<br>
+      <span class="subtitle">Where humans and agents decide together</span>
+    </h2>
+  </div>
+
+  <section>
+    <div class="about-content">
+      <p class="about-text">
+        Right now, I'm at <strong>Kotak</strong> building AI-native banking products. Not AI as a feature layer — AI as the foundation of how banks operate. Designing workflows where intelligence is embedded from the ground up. The challenge isn't making AI look good; it's making complex financial operations legible when humans and machines are making decisions together.
+      </p>
+      <p class="about-text">
+        Before this, I worked at <strong>Koinex</strong>, India's first crypto exchange—where fintech grabbed me. Led design at <strong>FloBiz</strong> (myBillBook, FloProfit). Built supply chain finance products at <strong>Cashflo</strong>.
+      </p>
+      <p class="about-text">
+        A year ago, I joined Kotak laser-focused on supply chain finance for Indian SMEs. Then AI changed the game — not just as a tool, but as a fundamental rethink of how products are structured. The agentic nature of AI-native systems completely redirected me, and I've been building in that direction ever since.
+      </p>
+      <p class="about-text">
+        Outside work, you'll find me solo camping in jungles, trekking the Western Ghats <s>whenever I get time</s>, no I make time for this. That's what keeps me alive and creative.
+      </p>
+      <p class="about-text">
+        Let's connect if you care about AI-native product design, building systems that compound, or just figuring things out - <a href="mailto:sandeshkhot110@gmail.com">sandeshkhot110@gmail.com</a>
+      </p>
+    </div>
+  </section>
+
+  <section style="margin-top: 120px;">
+    <span class="section-label">Vibe Experiments</span>
+    <p class="about-text" style="margin-bottom: 40px; font-size: 15px;">Side projects I'm building and thinking through.</p>
+
+    <div class="exp-list">
+      <a href="betternotes.html" class="exp-item">
+        <div class="exp-header">
+          <span class="exp-name">BetterNotes</span>
+          <span class="exp-arrow">→</span>
+        </div>
+        <p class="exp-desc">
+          AI-generated meeting summaries are thorough, comprehensive, well-structured—and still don't get read. The problem isn't summarization anymore. It's making summaries actually readable. That's what I'm solving.
+        </p>
+      </a>
+
+      <div class="exp-item inactive">
+        <div class="exp-header">
+          <span class="exp-name">Figma Content Agent</span>
+          <span class="exp-tag">Coming Soon</span>
+        </div>
+        <p class="exp-desc">
+          Not another generic content plugin. You upload your org's content guidelines. Select an artboard in Figma and run this. It does two things: assesses and scores your content against your guidelines, then generates a better version in full compliance. Your rules, your voice—automated.
+        </p>
+      </div>
+
+      <div class="exp-item inactive">
+        <div class="exp-header">
+          <span class="exp-name">Synthetic User Personas</span>
+          <span class="exp-tag">Coming Soon</span>
+        </div>
+        <p class="exp-desc">
+          Your org does endless research—files, recordings, interview transcripts scattered everywhere. What if you could convert those into synthetic users you can actually talk to? Not generic personas. Real talking users backed by your research data. Available 24/7 whenever you need to validate an idea.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-col">
+      <h3>Connect</h3>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/sandeshkhot/">LinkedIn</a>
+        <a href="https://dribbble.com/sandeshk">Dribbble</a>
+        <a href="mailto:sandeshkhot110@gmail.com">Email</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h3>Status</h3>
+      <p class="footer-note">
+        Available for discussions on AI-native product design, building agentic workflows, or exploring how intelligence reshapes banking operations.
+      </p>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
