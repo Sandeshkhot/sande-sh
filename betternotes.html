@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="BetterNotes — AI meeting summaries are thorough and still don't get read. The problem isn't summarization anymore; it's making summaries actually readable.">
 <title>BetterNotes — Sandesh</title>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-K4E7TR3BG8"></script>
@@ -86,19 +87,35 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .container > * {
+  .back, article > h1 {
     opacity: 0;
     animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  .container > *:nth-child(1) { animation-delay: 0.05s; }
-  .container > *:nth-child(2) { animation-delay: 0.15s; }
-  .container > *:nth-child(3) { animation-delay: 0.25s; }
-  .container > *:nth-child(4) { animation-delay: 0.35s; }
-  .container > *:nth-child(5) { animation-delay: 0.45s; }
-  .container > *:nth-child(6) { animation-delay: 0.55s; }
-  .container > *:nth-child(7) { animation-delay: 0.65s; }
-  .container > *:nth-child(8) { animation-delay: 0.75s; }
+  .back         { animation-delay: 0.05s; }
+  article > h1  { animation-delay: 0.2s; }
+
+  /* Reveal on scroll (driven by site.js) */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Dividers draw across when they come into view */
+  hr[data-reveal] {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  hr[data-reveal].is-visible { transform: scaleX(1); }
 
   .accent-mark {
     position: fixed;
@@ -112,6 +129,61 @@
       var(--accent) 80%, 
       transparent 100%);
     opacity: 0.4;
+  }
+
+  /* Reading progress fills the accent line */
+  .accent-mark::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: calc(var(--scroll, 0) * 100%);
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    transition: height 0.15s linear;
+  }
+
+  /* Faint cursor spotlight (injected by site.js on fine pointers only) */
+  .spotlight {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    background: radial-gradient(
+      420px circle at var(--x, 50%) var(--y, 30%),
+      rgba(255, 107, 53, 0.07),
+      transparent 60%
+    );
+  }
+
+  .spotlight.is-on { opacity: 1; }
+
+  /* Toast for copy-to-clipboard */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translate(-50%, 12px);
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 200;
+  }
+
+  .toast.is-on {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 
   /* Back link */
@@ -171,6 +243,18 @@
     color: var(--fg);
   }
 
+  p[data-reveal] > strong:first-child {
+    background-image: linear-gradient(rgba(255, 107, 53, 0.18), rgba(255, 107, 53, 0.18));
+    background-repeat: no-repeat;
+    background-size: 0% 40%;
+    background-position: 0 85%;
+    transition: background-size 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+  }
+
+  p[data-reveal].is-visible > strong:first-child {
+    background-size: 100% 40%;
+  }
+
   hr {
     border: none;
     border-top: 1px solid var(--line);
@@ -189,7 +273,20 @@
     padding: 32px;
     border-left: 3px solid var(--accent);
     background: rgba(255, 107, 53, 0.03);
+    position: relative;
+    overflow: hidden;
   }
+
+  .callout::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255, 107, 53, 0.06), transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .callout.is-visible::before { transform: translateX(0); }
 
   /* List */
   ul {
@@ -238,6 +335,20 @@
     margin: 0;
   }
 
+  .cta:hover { border-color: rgba(255, 107, 53, 0.5); }
+
+  .cta a {
+    color: var(--accent);
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    transition: background-size 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cta a:hover { background-size: 100% 2px; }
+
   @media (hover: hover) {
     a { cursor: crosshair; }
   }
@@ -246,6 +357,16 @@
     outline: 2px solid var(--accent);
     outline-offset: 4px;
     border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .back, article > h1, [data-reveal] { opacity: 1; transform: none; }
+    body::before { animation: none; }
   }
 
   @media (max-width: 768px) {
@@ -271,49 +392,59 @@
 
     <h1>The Problem No One's Talking About</h1>
 
-    <p>You get an AI-generated meeting summary in your inbox.</p>
-    <p>It's thorough. Comprehensive. Well-structured.</p>
-    <p><strong>And you still don't read it.</strong></p>
+    <p data-reveal>You get an AI-generated meeting summary in your inbox.</p>
+    <p data-reveal>It's thorough. Comprehensive. Well-structured.</p>
+    <p data-reveal><strong>And you still don't read it.</strong></p>
 
-    <hr>
+    <hr data-reveal>
 
-    <h2>Here's what actually happens:</h2>
+    <h2 data-reveal>Here's what actually happens:</h2>
 
-    <p><strong>Most people skim it for 1-2 minutes, looking for key items.</strong></p>
-    <p>You're scrolling for the signal. Your brain is filtering noise. You catch maybe what you think matters—but you might miss critical details because they weren't highlighted.</p>
+    <p data-reveal><strong>Most people skim it for 1-2 minutes, looking for key items.</strong></p>
+    <p data-reveal>You're scrolling for the signal. Your brain is filtering noise. You catch maybe what you think matters—but you might miss critical details because they weren't highlighted.</p>
 
-    <p><strong>Many ask for a TLDR instead.</strong></p>
-    <p>The original note-taker rewrites it. Takes time. Different stakeholders get different versions of the same meeting. You've now created multiple sources of truth.</p>
+    <p data-reveal><strong>Many ask for a TLDR instead.</strong></p>
+    <p data-reveal>The original note-taker rewrites it. Takes time. Different stakeholders get different versions of the same meeting. You've now created multiple sources of truth.</p>
 
-    <p><strong>Some people save it to read later.</strong></p>
-    <p>It never gets read. It sits in your inbox graveyard—a debt you never collect on.</p>
+    <p data-reveal><strong>Some people save it to read later.</strong></p>
+    <p data-reveal>It never gets read. It sits in your inbox graveyard—a debt you never collect on.</p>
 
-    <p><strong>And a few ignore it completely.</strong></p>
-    <p>They act on incomplete information. Or they ask in Slack later, disrupting async communication.</p>
+    <p data-reveal><strong>And a few ignore it completely.</strong></p>
+    <p data-reveal>They act on incomplete information. Or they ask in Slack later, disrupting async communication.</p>
 
-    <hr>
+    <hr data-reveal>
 
-    <h2>The Real Problem Isn't Summarization</h2>
+    <h2 data-reveal>The Real Problem Isn't Summarization</h2>
 
-    <p>Your AI tool already solved that. Meeting summaries are better than ever.</p>
-    <p><strong>The problem is this:</strong> AI solved the first mile (getting the content). It didn't solve the last mile—getting people to <em>actually</em> read it.</p>
-    <p>We shifted the bottleneck from transcription to communication.</p>
-    <p>We didn't eliminate it. We just renamed it.</p>
+    <p data-reveal>Your AI tool already solved that. Meeting summaries are better than ever.</p>
+    <p data-reveal><strong>The problem is this:</strong> AI solved the first mile (getting the content). It didn't solve the last mile—getting people to <em>actually</em> read it.</p>
+    <p data-reveal>We shifted the bottleneck from transcription to communication.</p>
+    <p data-reveal>We didn't eliminate it. We just renamed it.</p>
 
-    <hr>
+    <hr data-reveal>
 
-    <div class="callout">
+    <div class="callout" data-reveal>
       "It's not about how it's written. It's about how we read it."
     </div>
 
-    <hr>
+    <hr data-reveal>
 
-    <h2>Something's Coming</h2>
+    <h2 data-reveal>Something's Coming</h2>
 
-    <p>I'm thinking deeply about how to fix the last mile.</p>
-    <p>Not by writing better summaries. By making finished summaries actually readable.</p>
-    <p><strong>Stay tuned.</strong></p>
+    <p data-reveal>I'm thinking deeply about how to fix the last mile.</p>
+    <p data-reveal>Not by writing better summaries. By making finished summaries actually readable.</p>
+    <p data-reveal><strong>Stay tuned.</strong></p>
 
-    <div class="cta">
+    <div class="cta" data-reveal>
       <h3>Want to follow along?</h3>
-      <p>Reach out at <a href="/cdn-cgi/l/email-protection#bac9dbd4dedfc9d2d1d2d5ce8b8b8afaddd7dbd3d694d9d5d7" style="color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent);"><span class="__cf_email__" data-cfemail="1e6d7f707a7b6d767576716a2f2f2e5e79737f7772307d7173">[email&#160;protected]</span><
+      <p>Reach out at <a href="mailto:sandeshkhot110@gmail.com">sandeshkhot110@gmail.com</a></p>
+    </div>
+
+  </article>
+
+</div>
+
+<script src="site.js" defer></script>
+
+</body>
+</html>
