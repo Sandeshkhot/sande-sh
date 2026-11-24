@@ -14,6 +14,14 @@
 <meta name="twitter:description" content="Building AI-native banking operations where humans and agents decide together">
 <title>Sandesh — Designer × Builder × AI</title>
 <script>document.documentElement.classList.add('js');</script>
+<script>
+  /* Tidy old links: /index.html -> /, /page.html -> /page */
+  (function () {
+    var p = location.pathname, c = p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+    if (c !== p && location.protocol.indexOf('http') === 0) history.replaceState(null, '', c + location.search + location.hash);
+  })();
+</script>
+<link rel="canonical" href="https://www.sande.sh/">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-K4E7TR3BG8"></script>
 <script>
@@ -802,7 +810,7 @@ a:focus-visible, .exp-item:focus-visible {
     <p class="about-text" style="margin-bottom: 40px; font-size: 15px;">Side projects I'm building and thinking through.</p>
 
     <div class="exp-list">
-      <a href="visualrecap.html" class="exp-item" data-reveal>
+      <a href="/visualrecap" class="exp-item" data-reveal>
         <div class="exp-header">
           <span class="exp-name">VisualRecap</span>
           <span class="exp-arrow">→</span>
