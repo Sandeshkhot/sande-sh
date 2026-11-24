@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="BetterNotes — AI meeting summaries are thorough and still don't get read. The problem isn't summarization anymore; it's making summaries actually readable.">
 <title>BetterNotes — Sandesh</title>
+<script>document.documentElement.classList.add('js');</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-K4E7TR3BG8"></script>
 <script>
@@ -87,51 +88,112 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .back, article > h1 {
+  .back {
     opacity: 0;
     animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.05s;
   }
 
-  .back         { animation-delay: 0.05s; }
-  article > h1  { animation-delay: 0.2s; }
+  article > h1 { --split-delay: 0.3s; }
 
-  /* Reveal on scroll (driven by site.js) */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: opacity, transform;
-  }
-
-  [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* Dividers draw across when they come into view */
-  hr[data-reveal] {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  hr[data-reveal].is-visible { transform: scaleX(1); }
-
-  .accent-mark {
+  /* Reading percentage, top right */
+  .read-pct {
     position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, 
-      transparent 0%, 
-      var(--accent) 20%, 
-      var(--accent) 80%, 
-      transparent 100%);
-    opacity: 0.4;
+    top: 28px;
+    right: 32px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: 50;
   }
 
-  /* Reading progress fills the accent line */
+  .is-scrolled .read-pct { opacity: 0.7; }
+
+  /* ===================== Interaction layer ===================== */
+
+  .container { z-index: 2; }
+
+  /* Reactive dot field + spotlight (injected by site.js, mouse only) */
+  .dots {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .spotlight {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    background: radial-gradient(
+      560px circle at var(--x, 50%) var(--y, 30%),
+      rgba(255, 107, 53, 0.13),
+      transparent 60%
+    );
+  }
+
+  .spotlight.is-on { opacity: 1; }
+
+  /* Custom cursor */
+  .has-pointer, .has-pointer a, .has-pointer button, .has-pointer .exp-item { cursor: none; }
+
+  .cur-dot, .cur-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 300;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s, width 0.3s, height 0.3s, margin 0.3s,
+                background 0.3s, border-color 0.3s;
+  }
+
+  .cur-dot {
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    background: var(--accent);
+  }
+
+  .cur-ring {
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    border: 1px solid rgba(255, 107, 53, 0.7);
+  }
+
+  .cursor-on .cur-dot, .cursor-on .cur-ring { opacity: 1; }
+
+  [data-cursor="link"] .cur-ring {
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    background: rgba(255, 107, 53, 0.12);
+    border-color: var(--accent);
+  }
+
+  [data-cursor="card"] .cur-ring {
+    width: 76px;
+    height: 76px;
+    margin: -38px 0 0 -38px;
+    background: rgba(255, 107, 53, 0.08);
+    border-color: var(--accent);
+  }
+
+  .cursor-down .cur-ring {
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+  }
+
+  /* Scroll progress along the accent line, with a glowing head */
   .accent-mark::after {
     content: '';
     position: absolute;
@@ -140,26 +202,67 @@
     width: 100%;
     height: calc(var(--scroll, 0) * 100%);
     background: var(--accent);
-    box-shadow: 0 0 12px var(--accent);
+    box-shadow: 0 0 14px var(--accent);
     transition: height 0.15s linear;
   }
 
-  /* Faint cursor spotlight (injected by site.js on fine pointers only) */
-  .spotlight {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    background: radial-gradient(
-      420px circle at var(--x, 50%) var(--y, 30%),
-      rgba(255, 107, 53, 0.07),
-      transparent 60%
-    );
+  .accent-mark::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: calc(var(--scroll, 0) * 100%);
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px 2px rgba(255, 107, 53, 0.8);
+    transition: top 0.15s linear;
+    z-index: 1;
   }
 
-  .spotlight.is-on { opacity: 1; }
+  /* Word-by-word reveal for split headings */
+  .js [data-split]:not(.is-split) { visibility: hidden; }
+
+  .w {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding: 0 0.06em 0.12em;
+    margin: 0 -0.06em -0.12em;
+  }
+
+  .wi {
+    display: inline-block;
+    transform: translateY(110%);
+    animation: wordUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--split-delay, 0.4s) + var(--i) * 70ms);
+  }
+
+  @keyframes wordUp { to { transform: translateY(0); } }
+
+  /* Reveal on scroll */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(8px);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform, filter;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* Focus reading: the block you're on reads brightest */
+  p[data-focus] {
+    color: color-mix(in srgb, var(--fg) calc(var(--focus, 0) * 100%), var(--dim));
+    transition: color 0.25s linear;
+  }
 
   /* Toast for copy-to-clipboard */
   .toast {
@@ -184,6 +287,29 @@
   .toast.is-on {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+
+  /* ============================================================= */
+
+  /* Dividers draw across when they come into view */
+  hr[data-reveal] {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  hr[data-reveal].is-visible { transform: scaleX(1); }
+
+  .accent-mark {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, 
+      transparent 0%, 
+      rgba(255, 107, 53, 0.35) 20%, 
+      rgba(255, 107, 53, 0.35) 80%, 
+      transparent 100%);
   }
 
   /* Back link */
@@ -288,6 +414,16 @@
 
   .callout.is-visible::before { transform: translateX(0); }
 
+  .callout[data-reveal] {
+    clip-path: inset(0 100% 0 0);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1s cubic-bezier(0.16, 1, 0.3, 1),
+                clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .callout[data-reveal].is-visible { clip-path: inset(0 0 0 0); }
+
   /* List */
   ul {
     list-style: none;
@@ -349,9 +485,6 @@
 
   .cta a:hover { background-size: 100% 2px; }
 
-  @media (hover: hover) {
-    a { cursor: crosshair; }
-  }
 
   a:focus-visible {
     outline: 2px solid var(--accent);
@@ -365,13 +498,17 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
-    .back, article > h1, [data-reveal] { opacity: 1; transform: none; }
+    .back, [data-reveal] { opacity: 1; transform: none; filter: none; }
+    .js [data-split]:not(.is-split) { visibility: visible; }
+    .wi { transform: none; animation: none; }
+    .callout[data-reveal] { clip-path: none; }
     body::before { animation: none; }
   }
 
   @media (max-width: 768px) {
     .container { padding: 80px 24px; }
     .accent-mark { display: none; }
+    .read-pct { top: 20px; right: 20px; }
     body { font-size: 16px; }
     p { font-size: 16px; }
     li { font-size: 16px; }
@@ -384,42 +521,44 @@
 
 <div class="accent-mark"></div>
 
+<div class="read-pct" data-pct aria-hidden="true">0%</div>
+
 <div class="container">
 
   <a href="index.html" class="back">← BACK</a>
 
   <article>
 
-    <h1>The Problem No One's Talking About</h1>
+    <h1 data-split>The Problem No One's Talking About</h1>
 
-    <p data-reveal>You get an AI-generated meeting summary in your inbox.</p>
-    <p data-reveal>It's thorough. Comprehensive. Well-structured.</p>
-    <p data-reveal><strong>And you still don't read it.</strong></p>
+    <p data-reveal data-focus>You get an AI-generated meeting summary in your inbox.</p>
+    <p data-reveal data-focus>It's thorough. Comprehensive. Well-structured.</p>
+    <p data-reveal data-focus><strong>And you still don't read it.</strong></p>
 
     <hr data-reveal>
 
     <h2 data-reveal>Here's what actually happens:</h2>
 
-    <p data-reveal><strong>Most people skim it for 1-2 minutes, looking for key items.</strong></p>
-    <p data-reveal>You're scrolling for the signal. Your brain is filtering noise. You catch maybe what you think matters—but you might miss critical details because they weren't highlighted.</p>
+    <p data-reveal data-focus><strong>Most people skim it for 1-2 minutes, looking for key items.</strong></p>
+    <p data-reveal data-focus>You're scrolling for the signal. Your brain is filtering noise. You catch maybe what you think matters—but you might miss critical details because they weren't highlighted.</p>
 
-    <p data-reveal><strong>Many ask for a TLDR instead.</strong></p>
-    <p data-reveal>The original note-taker rewrites it. Takes time. Different stakeholders get different versions of the same meeting. You've now created multiple sources of truth.</p>
+    <p data-reveal data-focus><strong>Many ask for a TLDR instead.</strong></p>
+    <p data-reveal data-focus>The original note-taker rewrites it. Takes time. Different stakeholders get different versions of the same meeting. You've now created multiple sources of truth.</p>
 
-    <p data-reveal><strong>Some people save it to read later.</strong></p>
-    <p data-reveal>It never gets read. It sits in your inbox graveyard—a debt you never collect on.</p>
+    <p data-reveal data-focus><strong>Some people save it to read later.</strong></p>
+    <p data-reveal data-focus>It never gets read. It sits in your inbox graveyard—a debt you never collect on.</p>
 
-    <p data-reveal><strong>And a few ignore it completely.</strong></p>
-    <p data-reveal>They act on incomplete information. Or they ask in Slack later, disrupting async communication.</p>
+    <p data-reveal data-focus><strong>And a few ignore it completely.</strong></p>
+    <p data-reveal data-focus>They act on incomplete information. Or they ask in Slack later, disrupting async communication.</p>
 
     <hr data-reveal>
 
     <h2 data-reveal>The Real Problem Isn't Summarization</h2>
 
-    <p data-reveal>Your AI tool already solved that. Meeting summaries are better than ever.</p>
-    <p data-reveal><strong>The problem is this:</strong> AI solved the first mile (getting the content). It didn't solve the last mile—getting people to <em>actually</em> read it.</p>
-    <p data-reveal>We shifted the bottleneck from transcription to communication.</p>
-    <p data-reveal>We didn't eliminate it. We just renamed it.</p>
+    <p data-reveal data-focus>Your AI tool already solved that. Meeting summaries are better than ever.</p>
+    <p data-reveal data-focus><strong>The problem is this:</strong> AI solved the first mile (getting the content). It didn't solve the last mile—getting people to <em>actually</em> read it.</p>
+    <p data-reveal data-focus>We shifted the bottleneck from transcription to communication.</p>
+    <p data-reveal data-focus>We didn't eliminate it. We just renamed it.</p>
 
     <hr data-reveal>
 
@@ -431,9 +570,9 @@
 
     <h2 data-reveal>Something's Coming</h2>
 
-    <p data-reveal>I'm thinking deeply about how to fix the last mile.</p>
-    <p data-reveal>Not by writing better summaries. By making finished summaries actually readable.</p>
-    <p data-reveal><strong>Stay tuned.</strong></p>
+    <p data-reveal data-focus>I'm thinking deeply about how to fix the last mile.</p>
+    <p data-reveal data-focus>Not by writing better summaries. By making finished summaries actually readable.</p>
+    <p data-reveal data-focus><strong>Stay tuned.</strong></p>
 
     <div class="cta" data-reveal>
       <h3>Want to follow along?</h3>
