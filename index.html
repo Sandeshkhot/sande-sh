@@ -735,6 +735,203 @@ a:focus-visible, .exp-item:focus-visible {
 
 
 
+/* ================= Bigger or smaller: lenders ================= */
+.game-intro { font-size: 15px; margin-bottom: 32px; }
+
+.game-card {
+  position: relative;
+  border: 1px solid var(--line);
+  background: rgba(255, 107, 53, 0.02);
+  padding: 28px 32px 32px;
+  transition: border-color 0.3s, opacity 0.26s ease, transform 0.26s ease;
+}
+
+.game-card:hover { border-color: rgba(255, 107, 53, 0.35); }
+.game-card.is-sliding { opacity: 0; transform: translateX(-16px); }
+
+.hl-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.hl-measure {
+  color: var(--fg);
+  border: 1px solid var(--accent);
+  padding: 3px 8px;
+  animation: measureIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes measureIn { from { opacity: 0; transform: translateY(-6px); } }
+
+.hl-unit { font-size: 0.5em; font-style: normal; color: var(--dim); }
+
+.hl-streak b {
+  color: var(--accent);
+  font-size: 14px;
+  margin-left: 4px;
+  display: inline-block;
+  animation: bump 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bump { 40% { transform: scale(1.5); } }
+
+.hl-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: stretch;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hl-row.is-entering { opacity: 0; transform: translateX(24px); }
+
+.hl-vs {
+  align-self: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--dim);
+}
+
+.hl-card {
+  border: 1px solid var(--line);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 210px;
+  transition: border-color 0.35s, background 0.35s;
+}
+
+.hl-right { border-style: dashed; }
+.hl-card.is-hit  { border-style: solid; border-color: var(--accent); background: rgba(255, 107, 53, 0.08); }
+.hl-card.is-miss { border-style: solid; border-color: #55554e; animation: shake 0.4s; }
+
+@keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+.hl-type {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.hl-name {
+  font-family: var(--serif);
+  font-size: clamp(20px, 2.6vw, 24px);
+  line-height: 1.2;
+  color: var(--fg);
+  margin-bottom: 14px;
+}
+
+.hl-pay {
+  font-family: var(--serif);
+  font-size: clamp(26px, 3.6vw, 34px);
+  font-style: italic;
+  color: var(--accent);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 4px;
+}
+
+.hl-pay.is-hidden { color: var(--dim); font-style: normal; }
+
+.hl-prompt { font-size: 12px; color: var(--dim); margin-bottom: 16px; }
+
+.hl-prompt.is-answer {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.hl-src {
+  margin-top: auto;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-decoration: none;
+  align-self: flex-start;
+  transition: color 0.2s;
+}
+
+.hl-left .hl-src { padding-top: 22px; }
+.hl-src:hover { color: var(--accent); }
+
+.hl-btns { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.hl-btn, .hl-cta {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 12px 10px;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.hl-arrow { color: var(--accent); display: inline-block; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.hl-btn:not(:disabled):hover {
+  border-color: var(--accent);
+  background: rgba(255, 107, 53, 0.08);
+  transform: translateY(-2px);
+}
+
+.hl-btn[data-dir="higher"]:not(:disabled):hover .hl-arrow { transform: translateY(-3px); }
+.hl-btn[data-dir="lower"]:not(:disabled):hover .hl-arrow  { transform: translateY(3px); }
+.hl-btn:disabled { opacity: 0.35; }
+.hl-btn.is-hit  { opacity: 1; border-color: var(--accent); color: var(--accent); }
+.hl-btn.is-miss { opacity: 1; border-color: #55554e; text-decoration: line-through; }
+
+.hl-over {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hl-over.is-on { opacity: 1; transform: none; }
+.hl-final { font-family: var(--serif); line-height: 1; margin-bottom: 10px; }
+.hl-final-n { font-size: 64px; font-style: italic; color: var(--accent); }
+.hl-final-l { font-size: 22px; color: var(--dim); }
+.hl-line { font-size: 14px; color: var(--fg); margin-bottom: 12px; }
+.hl-squares { font-size: 18px; letter-spacing: 3px; margin-bottom: 22px; word-break: break-all; }
+.hl-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hl-cta { padding: 10px 16px; }
+.hl-cta:hover { border-color: var(--accent); color: var(--accent); }
+.hl-cta.is-primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.hl-cta.is-primary:hover { background: transparent; color: var(--accent); }
+
+.game-note { font-size: 12px; color: var(--dim); opacity: 0.8; margin-top: 16px; line-height: 1.7; }
+
+.hl-btn:focus-visible, .hl-cta:focus-visible, .hl-src:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .game-card { padding: 20px 16px 22px; }
+  .hl-row { grid-template-columns: 1fr; gap: 10px; }
+  .hl-vs { justify-self: center; font-size: 15px; }
+  .hl-card { min-height: 0; padding: 16px; }
+  .hl-left .hl-src { padding-top: 10px; }
+  .hl-final-n { font-size: 52px; }
+  .hl-top { flex-wrap: wrap; gap: 8px; }
+}
+/* ============================================================= */
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -809,6 +1006,15 @@ a:focus-visible, .exp-item:focus-visible {
   </section>
 
 
+  <section id="play" style="margin-top: 120px;" data-reveal>
+    <span class="section-label">Play &middot; Bigger or smaller</span>
+    <p class="about-text game-intro">Indian lenders, by the numbers. Each round picks a measure: loan book, deposits or branches. Guess higher or lower and keep the streak going.</p>
+    <div class="game-card" data-game>
+      <noscript><p class="game-note">Turn on JavaScript to play.</p></noscript>
+    </div>
+    <p class="game-note">Latest figures from each lender&rsquo;s own results filings, mostly the quarter to September 2026. Loan book means assets under management for NBFCs and housing finance companies. Every card links its source.</p>
+  </section>
+
   <section style="margin-top: 120px;" data-reveal>
     <span class="section-label">Vibe Experiments</span>
     <p class="about-text" style="margin-bottom: 40px; font-size: 15px;">Side projects I'm building and thinking through.</p>
@@ -867,6 +1073,7 @@ a:focus-visible, .exp-item:focus-visible {
 </div>
 
 <script src="site.js" defer></script>
+<script src="game.js" defer></script>
 
 </body>
 </html>
