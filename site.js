@@ -201,7 +201,7 @@
   document.body.appendChild(canvas);
   var ctx = canvas.getContext('2d');
   var dpr = Math.min(2, window.devicePixelRatio || 1);
-  var GAP = 30, R = 170, W, H, cols, rows;
+  var GAP = 30, R = 110, W, H, cols, rows;
 
   function sizeCanvas() {
     W = window.innerWidth; H = window.innerHeight;
@@ -223,10 +223,10 @@
         var dx = x - fx, dy = y - fy;
         var d = Math.sqrt(dx * dx + dy * dy);
         var k = moved && d < R ? ease(1 - d / R) : 0;
-        var a = 0.07 + k * 0.6;
-        var rad = 1 + k * 1.4;
+        var a = 0.07 + k * 0.32;
+        var rad = 1 + k * 0.6;
         // push dots gently away from the cursor
-        var px = x + (k ? dx / d * k * 6 : 0), py = y + (k ? dy / d * k * 6 : 0);
+        var px = x + (k ? dx / d * k * 2.5 : 0), py = y + (k ? dy / d * k * 2.5 : 0);
         ctx.fillStyle = k > 0.02
           ? 'rgba(255,107,53,' + a.toFixed(3) + ')'
           : 'rgba(232,230,224,' + a.toFixed(3) + ')';
