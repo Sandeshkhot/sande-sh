@@ -13,6 +13,15 @@
 <meta name="twitter:title" content="Sandesh — Designer × Builder × AI">
 <meta name="twitter:description" content="Building AI-native banking operations where humans and agents decide together">
 <title>Sandesh — Designer × Builder × AI</title>
+<script>document.documentElement.classList.add('js');</script>
+<script>
+  /* Tidy old links: /index.html -> /, /page.html -> /page */
+  (function () {
+    var p = location.pathname, c = p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+    if (c !== p && location.protocol.indexOf('http') === 0) history.replaceState(null, '', c + location.search + location.hash);
+  })();
+</script>
+<link rel="canonical" href="https://www.sande.sh/">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-K4E7TR3BG8"></script>
 <script>
@@ -95,17 +104,196 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.container > * {
+.header {
   opacity: 0;
   animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.05s;
 }
 
-.container > *:nth-child(1) { animation-delay: 0.1s; }
-.container > *:nth-child(2) { animation-delay: 0.2s; }
-.container > *:nth-child(3) { animation-delay: 0.3s; }
-.container > *:nth-child(4) { animation-delay: 0.4s; }
-.container > *:nth-child(5) { animation-delay: 0.5s; }
-.container > *:nth-child(6) { animation-delay: 0.6s; }
+/* Name types in, tagline decodes (site.js); hidden until JS starts */
+.js .name:not(.is-typing):not(.is-done),
+.js .tagline:not(.is-on):not(.is-done) { opacity: 0; }
+
+.name, .tagline { transition: opacity 0.3s; }
+
+/* ===================== Interaction layer ===================== */
+
+.container { z-index: 2; }
+
+/* Reactive dot field + spotlight (injected by site.js, mouse only) */
+.dots {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background: radial-gradient(
+    420px circle at var(--x, 50%) var(--y, 30%),
+    rgba(255, 107, 53, 0.08),
+    transparent 60%
+  );
+}
+
+.spotlight.is-on { opacity: 1; }
+
+/* Custom cursor */
+.has-pointer, .has-pointer a, .has-pointer button, .has-pointer .exp-item { cursor: none; }
+
+.cur-dot, .cur-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 300;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s, width 0.3s, height 0.3s, margin 0.3s,
+              background 0.3s, border-color 0.3s;
+}
+
+.cur-dot {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  background: var(--accent);
+}
+
+.cur-ring {
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 1px solid rgba(255, 107, 53, 0.45);
+}
+
+.cursor-on .cur-dot, .cursor-on .cur-ring { opacity: 1; }
+
+[data-cursor="link"] .cur-ring {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  background: rgba(255, 107, 53, 0.08);
+  border-color: var(--accent);
+}
+
+[data-cursor="card"] .cur-ring {
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  background: rgba(255, 107, 53, 0.05);
+  border-color: var(--accent);
+}
+
+.cursor-down .cur-ring {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+}
+
+/* Scroll progress along the accent line, with a glowing head */
+.accent-mark::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(var(--scroll, 0) * 100%);
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--accent);
+  transition: height 0.15s linear;
+}
+
+.accent-mark::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: calc(var(--scroll, 0) * 100%);
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px 2px rgba(255, 107, 53, 0.8);
+  transition: top 0.15s linear;
+  z-index: 1;
+}
+
+/* Word-by-word reveal for split headings */
+.js [data-split]:not(.is-split) { visibility: hidden; }
+
+.w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding: 0 0.06em 0.12em;
+  margin: 0 -0.06em -0.12em;
+}
+
+.wi {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: wordUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--split-delay, 0.4s) + var(--i) * 70ms);
+}
+
+@keyframes wordUp { to { transform: translateY(0); } }
+
+/* Reveal on scroll */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(40px);
+  filter: blur(8px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* Focus reading: the block you're on reads brightest */
+p[data-focus] {
+  color: color-mix(in srgb, var(--fg) calc(var(--focus, 0) * 100%), var(--dim));
+  transition: color 0.25s linear;
+}
+
+/* Toast for copy-to-clipboard */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 12px);
+  padding: 8px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 200;
+}
+
+.toast.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ============================================================= */
 
 .accent-mark {
   position: fixed;
@@ -115,10 +303,9 @@ body::before {
   width: 2px;
   background: linear-gradient(180deg, 
     transparent 0%, 
-    var(--accent) 20%, 
-    var(--accent) 80%, 
+    rgba(255, 107, 53, 0.35) 20%, 
+    rgba(255, 107, 53, 0.35) 80%, 
     transparent 100%);
-  opacity: 0.4;
 }
 
 .header {
@@ -135,6 +322,15 @@ body::before {
   margin-bottom: 8px;
 }
 
+.name::after {
+  content: '_';
+  color: var(--accent);
+  margin-left: 2px;
+  animation: blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes blink { to { visibility: hidden; } }
+
 .tagline {
   font-size: 13px;
   color: var(--dim);
@@ -146,7 +342,40 @@ body::before {
 .hero { 
   margin-bottom: 120px;
   position: relative;
+  --split-delay: 0.5s;
+  transform: translate3d(0, var(--hy, 0px), 0) scale(var(--hs, 1));
+  transform-origin: left top;
+  will-change: transform, opacity;
 }
+
+.hero-title, .accent-word { will-change: transform; }
+
+/* Scroll cue: a thin line with a travelling accent, fades once you scroll */
+.scroll-cue {
+  position: absolute;
+  left: 2px;
+  bottom: -64px;
+  width: 1px;
+  height: 48px;
+  background: var(--line);
+  overflow: hidden;
+  transition: opacity 0.5s;
+}
+
+.scroll-cue::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  animation: cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) 1.6s infinite;
+}
+
+@keyframes cue { to { top: 100%; } }
+
+.is-scrolled .scroll-cue { opacity: 0; }
 
 .hero-title {
   font-family: var(--serif);
@@ -161,7 +390,26 @@ body::before {
 .hero-title .accent-word {
   color: var(--accent);
   font-style: italic;
+  position: relative;
+  display: inline-block;
 }
+
+/* Underline draws in as the hero settles */
+.hero-title .accent-word::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.6;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: draw 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.7s forwards;
+}
+
+@keyframes draw { to { transform: scaleX(1); } }
 
 .hero-title .subtitle {
   display: block;
@@ -188,6 +436,23 @@ section {
   display: block;
 }
 
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  vertical-align: middle;
+  margin-right: 0;
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s,
+              margin-right 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+
+[data-reveal].is-visible .section-label::before {
+  width: 28px;
+  margin-right: 12px;
+}
+
 .about-content {
   max-width: 760px;
 }
@@ -210,12 +475,30 @@ section {
 .about-text a {
   color: var(--accent);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .about-text a:hover {
-  border-color: var(--accent);
+  background-size: 100% 1px;
+}
+
+.about-text strong {
+  position: relative;
+  transition: color 0.3s;
+  background-image: linear-gradient(rgba(255, 107, 53, 0.22), rgba(255, 107, 53, 0.22));
+  background-repeat: no-repeat;
+  background-size: 0% 38%;
+  background-position: 0 88%;
+  transition: background-size 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s;
+}
+
+.about-text strong:hover {
+  background-size: 100% 38%;
+  color: var(--accent);
 }
 
 .about-text s {
@@ -234,17 +517,64 @@ section {
   display: block;
   padding-bottom: 32px;
   border-bottom: 1px solid var(--line);
-  transition: opacity 0.2s;
+  position: relative;
+  transition: opacity 0.2s, padding-left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.exp-item:hover {
-  opacity: 0.8;
+/* Accent rule grows in from the left on hover */
+.exp-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 2px;
+  height: 0;
+  background: var(--accent);
+  transition: height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exp-item:not(.inactive):hover {
+  padding-left: 20px;
+}
+
+.exp-item:not(.inactive):hover::before {
+  height: 1.6em;
+}
+
+.exp-item:not(.inactive):hover .exp-name {
+  color: var(--accent);
+}
+
+.exp-item:not(.inactive):hover .exp-arrow {
+  transform: translateX(8px);
+}
+
+.exp-item:not(.inactive):hover .exp-desc {
+  color: var(--fg);
 }
 
 .exp-item.inactive {
   opacity: 0.6;
+}
+
+.exp-item.inactive:hover { opacity: 0.85; }
+
+/* Cursor-tracking glow inside each card */
+.exp-item::after {
+  content: '';
+  position: absolute;
+  inset: -16px -24px 0;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 107, 53, 0.07),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.35s;
   pointer-events: none;
 }
+
+.exp-item:hover::after { opacity: 1; }
 
 .exp-header {
   display: flex;
@@ -257,11 +587,14 @@ section {
   color: var(--fg);
   font-size: 16px;
   font-weight: 400;
+  transition: color 0.25s;
 }
 
 .exp-arrow {
   color: var(--accent);
   font-size: 14px;
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .exp-tag {
@@ -279,6 +612,27 @@ section {
   color: var(--dim);
   line-height: 1.8;
   margin: 0;
+  transition: color 0.3s;
+}
+
+/* Soft pulse on "Coming Soon" */
+.exp-tag::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 7px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.45); }
+  50%      { opacity: 0.6; box-shadow: 0 0 0 5px rgba(255, 107, 53, 0); }
 }
 
 .footer {
@@ -319,17 +673,58 @@ section {
   transform: translateX(4px);
 }
 
+.footer-links a[href^="http"]::after {
+  content: '\2197';
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--accent);
+  opacity: 0;
+  transform: translate(-6px, 6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.footer-links a[href^="http"]:hover::after {
+  opacity: 1;
+  transform: none;
+}
+
 .footer-note {
   font-size: 14px;
   color: var(--dim);
   line-height: 1.7;
 }
 
-@media (hover: hover) {
-  a, .exp-item {
-    cursor: crosshair;
-  }
+.footer-meta {
+  margin-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  opacity: 0;
+  transition: opacity 0.6s;
 }
+
+.footer-meta.is-on { opacity: 0.7; }
+
+.footer-meta::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  margin-right: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  animation: pulse-green 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45); }
+  50%      { box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
+}
+
 
 a:focus-visible, .exp-item:focus-visible {
   outline: 2px solid var(--accent);
@@ -337,8 +732,261 @@ a:focus-visible, .exp-item:focus-visible {
   border-radius: 2px;
 }
 
+
+
+
+/* ================= Bigger or smaller: banks ================= */
+.game-intro { font-size: 15px; margin-bottom: 28px; }
+
+/* The panel: clearly its own object on the page */
+.game-card {
+  position: relative;
+  border: 1px solid rgba(255, 107, 53, 0.45);
+  border-top: 3px solid var(--accent);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 107, 53, 0.14), transparent 60%),
+    #12110e;
+  box-shadow: 0 40px 90px -40px rgba(255, 107, 53, 0.45);
+  padding: 26px 32px 32px;
+  transition: opacity 0.26s ease, transform 0.26s ease, box-shadow 0.4s;
+}
+
+.game-card:hover { box-shadow: 0 40px 100px -36px rgba(255, 107, 53, 0.6); }
+.game-card.is-sliding { opacity: 0; transform: translateX(-16px); }
+
+/* Streak and best */
+.hl-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.hl-streak, .hl-best {
+  border: 1px solid var(--line);
+  padding: 5px 10px;
+  background: rgba(10, 10, 8, 0.6);
+}
+
+.hl-streak b {
+  color: var(--accent);
+  font-size: 14px;
+  margin-left: 6px;
+  display: inline-block;
+  animation: bump 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bump { 40% { transform: scale(1.5); } }
+
+/* The question: the first thing you read */
+.hl-q {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(28px, 4.4vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-bottom: 24px;
+  animation: qIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hl-q-word {
+  color: var(--accent);
+  font-style: italic;
+  background-image: linear-gradient(rgba(255, 107, 53, 0.22), rgba(255, 107, 53, 0.22));
+  background-repeat: no-repeat;
+  background-size: 100% 0.32em;
+  background-position: 0 88%;
+  padding: 0 0.08em;
+}
+
+@keyframes qIn { from { opacity: 0; transform: translateY(-8px); } }
+
+/* Two cards */
+.hl-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: stretch;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hl-row.is-entering { opacity: 0; transform: translateX(24px); }
+
+.hl-vs {
+  align-self: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: #12110e;
+  color: var(--accent);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+}
+
+.hl-card {
+  background: #0a0a08;
+  border: 1px solid #34332d;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 236px;
+  transition: border-color 0.35s, background 0.35s;
+}
+
+.hl-right { border: 1px dashed rgba(255, 107, 53, 0.6); }
+.hl-card.is-hit  { border: 1px solid var(--accent); background: rgba(255, 107, 53, 0.1); }
+.hl-card.is-miss { border: 1px solid #6a6a62; animation: shake 0.4s; }
+
+@keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+.hl-type {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.hl-name {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.8vw, 26px);
+  line-height: 1.15;
+  color: var(--fg);
+  margin-bottom: 12px;
+}
+
+.hl-pay {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4.4vw, 44px);
+  font-style: italic;
+  color: var(--accent);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 6px;
+}
+
+.hl-pay.is-hidden { color: var(--fg); font-style: normal; opacity: 0.35; }
+.hl-unit { font-size: 0.42em; font-style: normal; color: var(--dim); }
+
+.hl-prompt { font-size: 12px; color: var(--dim); margin-bottom: 16px; }
+
+.hl-prompt.is-answer {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.hl-src {
+  margin-top: auto;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-decoration: none;
+  align-self: flex-start;
+  transition: color 0.2s;
+}
+
+.hl-left .hl-src { padding-top: 22px; }
+.hl-src:hover { color: var(--accent); }
+
+/* Answer buttons: big and obvious */
+.hl-btns { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.hl-btn, .hl-cta {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  padding: 14px 10px;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s, opacity 0.3s;
+}
+
+.hl-btn[data-dir="higher"] { background: var(--accent); color: var(--bg); }
+.hl-btn[data-dir="lower"]  { background: transparent; color: var(--accent); }
+.hl-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.hl-btn:not(:disabled):hover { transform: translateY(-2px); }
+.hl-btn[data-dir="higher"]:not(:disabled):hover { background: #ff8455; }
+.hl-btn[data-dir="lower"]:not(:disabled):hover  { background: rgba(255, 107, 53, 0.14); }
+.hl-btn[data-dir="higher"]:not(:disabled):hover .hl-arrow { transform: translateY(-3px); }
+.hl-btn[data-dir="lower"]:not(:disabled):hover .hl-arrow  { transform: translateY(3px); }
+.hl-btn:active { transform: scale(0.97); }
+.hl-btn:disabled { opacity: 0.3; }
+.hl-btn.is-hit  { opacity: 1; }
+.hl-btn.is-miss { opacity: 1; text-decoration: line-through; }
+
+/* End of run */
+.hl-over {
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 107, 53, 0.3);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hl-over.is-on { opacity: 1; transform: none; }
+.hl-final { font-family: var(--serif); line-height: 1; margin-bottom: 10px; }
+.hl-final-n { font-size: 72px; font-style: italic; color: var(--accent); }
+.hl-final-l { font-size: 24px; color: var(--dim); }
+.hl-line { font-size: 14px; color: var(--fg); margin-bottom: 12px; }
+.hl-squares { font-size: 18px; letter-spacing: 3px; margin-bottom: 22px; word-break: break-all; }
+.hl-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hl-cta { padding: 12px 18px; background: transparent; color: var(--accent); }
+.hl-cta:hover { background: rgba(255, 107, 53, 0.14); }
+.hl-cta.is-primary { background: var(--accent); color: var(--bg); }
+.hl-cta.is-primary:hover { background: #ff8455; }
+
+.game-note { font-size: 12px; color: var(--dim); opacity: 0.8; margin-top: 16px; line-height: 1.7; }
+
+.hl-btn:focus-visible, .hl-cta:focus-visible, .hl-src:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .game-card { padding: 20px 16px 22px; }
+  .hl-q { margin-bottom: 18px; }
+  .hl-row { grid-template-columns: 1fr; gap: 10px; }
+  .hl-vs { justify-self: center; width: 32px; height: 32px; font-size: 14px; }
+  .hl-card { min-height: 0; padding: 16px; }
+  .hl-left .hl-src { padding-top: 10px; }
+  .hl-final-n { font-size: 56px; }
+}
+/* ============================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .header, [data-reveal] { opacity: 1; transform: none; filter: none; }
+  .js [data-split]:not(.is-split) { visibility: visible; }
+  .wi { transform: none; animation: none; }
+  .hero-title .accent-word::after { transform: scaleX(1); }
+  .scroll-cue { display: none; }
+  body::before { animation: none; }
+}
+
 @media (max-width: 768px) {
   .container { padding: 80px 24px 60px; }
+  .exp-item:not(.inactive):hover { padding-left: 0; }
+  .exp-item::before { display: none; }
+  .scroll-cue { bottom: -44px; height: 32px; }
   .header { margin-bottom: 60px; }
   .hero { margin-bottom: 80px; }
   section { margin-bottom: 60px; }
@@ -361,45 +1009,56 @@ a:focus-visible, .exp-item:focus-visible {
 <div class="container">
 
   <header class="header">
-    <h1 class="name">Sandesh</h1>
-    <p class="tagline">Designer × Builder × AI</p>
+    <h1 class="name" data-type>Sandesh</h1>
+    <p class="tagline" data-scramble>Designer × Builder × AI</p>
   </header>
 
-  <div class="hero">
-    <h2 class="hero-title">
+  <div class="hero" data-hero>
+    <h2 class="hero-title" data-split>
       Building <span class="accent-word">AI-native</span> banking operations<br>
       <span class="subtitle">Where humans and agents decide together</span>
     </h2>
+    <div class="scroll-cue" aria-hidden="true"></div>
   </div>
 
-  <section>
+  <section data-reveal>
     <div class="about-content">
-      <p class="about-text">
+      <p class="about-text" data-focus>
         Right now, I'm at <strong>Kotak</strong> building AI-native banking products. Not AI as a feature layer — AI as the foundation of how banks operate. Designing workflows where intelligence is embedded from the ground up. The challenge isn't making AI look good; it's making complex financial operations legible when humans and machines are making decisions together.
       </p>
-      <p class="about-text">
+      <p class="about-text" data-focus>
         Before this, I worked at <strong>Koinex</strong>, India's first crypto exchange—where fintech grabbed me. Led design at <strong>FloBiz</strong> (myBillBook, FloProfit). Built supply chain finance products at <strong>Cashflo</strong>.
       </p>
-      <p class="about-text">
+      <p class="about-text" data-focus>
         A year ago, I joined Kotak laser-focused on supply chain finance for Indian SMEs. Then AI changed the game — not just as a tool, but as a fundamental rethink of how products are structured. The agentic nature of AI-native systems completely redirected me, and I've been building in that direction ever since.
       </p>
-      <p class="about-text">
+      <p class="about-text" data-focus>
         Outside work, you'll find me solo camping in jungles, trekking the Western Ghats <s>whenever I get time</s>, no I make time for this. That's what keeps me alive and creative.
       </p>
-      <p class="about-text">
+      <p class="about-text" data-focus>
         Let's connect if you care about AI-native product design, building systems that compound, or just figuring things out - <a href="mailto:sandeshkhot110@gmail.com">sandeshkhot110@gmail.com</a>
       </p>
     </div>
   </section>
 
-  <section style="margin-top: 120px;">
+
+  <section id="play" style="margin-top: 120px;" data-reveal>
+    <span class="section-label">Play &middot; Bigger or smaller</span>
+    <p class="about-text game-intro">India&rsquo;s public sector and private banks, by the numbers. Each round picks a measure: loan book, deposits or branches. Guess higher or lower and keep the streak going.</p>
+    <div class="game-card" data-game>
+      <noscript><p class="game-note">Turn on JavaScript to play.</p></noscript>
+    </div>
+    <p class="game-note">Latest figures from each bank&rsquo;s own results filings, mostly the quarter to September 2026. Every card links its source.</p>
+  </section>
+
+  <section style="margin-top: 120px;" data-reveal>
     <span class="section-label">Vibe Experiments</span>
     <p class="about-text" style="margin-bottom: 40px; font-size: 15px;">Side projects I'm building and thinking through.</p>
 
     <div class="exp-list">
-      <a href="betternotes.html" class="exp-item">
+      <a href="/visualrecap" class="exp-item" data-reveal>
         <div class="exp-header">
-          <span class="exp-name">BetterNotes</span>
+          <span class="exp-name">VisualRecap</span>
           <span class="exp-arrow">→</span>
         </div>
         <p class="exp-desc">
@@ -407,7 +1066,7 @@ a:focus-visible, .exp-item:focus-visible {
         </p>
       </a>
 
-      <div class="exp-item inactive">
+      <div class="exp-item inactive" data-reveal>
         <div class="exp-header">
           <span class="exp-name">Figma Content Agent</span>
           <span class="exp-tag">Coming Soon</span>
@@ -417,7 +1076,7 @@ a:focus-visible, .exp-item:focus-visible {
         </p>
       </div>
 
-      <div class="exp-item inactive">
+      <div class="exp-item inactive" data-reveal>
         <div class="exp-header">
           <span class="exp-name">Synthetic User Personas</span>
           <span class="exp-tag">Coming Soon</span>
@@ -429,7 +1088,7 @@ a:focus-visible, .exp-item:focus-visible {
     </div>
   </section>
 
-  <footer class="footer">
+  <footer class="footer" data-reveal>
     <div class="footer-col">
       <h3>Connect</h3>
       <div class="footer-links">
@@ -443,10 +1102,14 @@ a:focus-visible, .exp-item:focus-visible {
       <p class="footer-note">
         Available for discussions on AI-native product design, building agentic workflows, or exploring how intelligence reshapes banking operations.
       </p>
+      <p class="footer-meta" data-clock-wrap>Mumbai &middot; <span data-clock></span></p>
     </div>
   </footer>
 
 </div>
+
+<script src="site.js" defer></script>
+<script src="game.js" defer></script>
 
 </body>
 </html>
